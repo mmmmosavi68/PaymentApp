@@ -1,0 +1,55 @@
+﻿
+@{
+    ViewData["Title"] = "فرم‌های داوطلب";
+}
+
+<div class="container mt-4">
+
+    <h3>انتخاب فرم</h3>
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <select id="formSelect" class="form-control">
+                <option value="">-- یک فرم انتخاب کنید --</option>
+                @foreach (var form in Model)
+                {
+                    <option value="@form.Id">@form.Title</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button id="btnAdd" class="btn btn-primary">افزودن فرم</button>
+        </div>
+    </div>
+
+    <!-- کانتینر فرم داینامیک -->
+    <div id="LoadFormContainer" style="display:none;"></div>
+
+    <!-- کانتینر جدول رکوردها -->
+    <div id="SubmissionDataContainer">
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // دکمه افزودن فرم
+            $("#btnAdd").click(function () {
+                var formId = $("#formSelect").val();
+                if (!formId) {
+                    alert("لطفاً یک فرم انتخاب کنید.");
+                    return;
+                }
+
+                // ریدایرکت به اکشن LoadForm ولی حالا به صورت View کامل
+                window.location.href = "/Student/StudentHome/LoadForm?formId=" + formId;
+            });
+
+            // این کد PartialView را بارگذاری می‌کند
+            $("#SubmissionDataContainer").load("/Student/StudentHome/SubmissionDataList", function () { });
+
+        });
+    </script>
+}

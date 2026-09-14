@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "ورود به سیستم";
+    Layout = "~/Views/Shared/_LoginStudentLayout.cshtml";
+}
+
+<div class="login-header">
+    <div class="neu-icon">
+        <div class="icon-inner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+            </svg>
+        </div>
+    </div>
+    <h2>ورود به سیستم</h2>
+    <p>لطفا برای ادامه وارد شوید</p>
+</div>
+
+<div id="loginOptions" class="form-options">
+    <div class="remember-wrapper">
+        <input type="radio" name="loginMethod" value="LoginOTP" id="optOtp" checked />
+        <label class="checkbox-label" for="optOtp">ورود با یکبار رمز</label>
+    </div>
+    <div class="remember-wrapper">
+        <input type="radio" name="loginMethod" value="LoginCodeRahgiri" id="optTrack" />
+        <label class="checkbox-label" for="optTrack">ورود با کد رهگیری</label>
+    </div>
+</div>
+
+<div id="partialContainer"></div>
+@section Scripts {
+
+    <script>
+        (function () {
+            // global instance container
+            window._neumorphismInstance = window._neumorphismInstance || null;
+
+            function initNeumoInstance() {
+                // اگر نمونه قبلی وجود دارد، سعی کن آن را پاک کنی
+                try {
+                    if (window._neumorphismInstance && typeof window._neumorphismInstance.destroy === 'function') {
+                        window._neumorphismInstance.destroy();
+                    }
+                } catch (err) { /* ignore */ }
+
+                // ایجاد نمونه جدید
+                window._neumorphismInstance = new NeumorphismLoginForm();
+            }
+
+            function loadPartial(url) {
+                $('#partialContainer').load(url, function () {
+                    initNeumoInstance();
+                });
+            }
+
+            $(function () {
+                function getUrlFor(method) {
+                    return '/Student/StudentLogin/' + method;
+                }
+
+                // initial load
+                var initialMethod = $('input[name="loginMethod"]:checked').val();
+                loadPartial(getUrlFor(initialMethod));
+
+                // on change
+                $('#loginOptions input[name="loginMethod"]').on('change', function () {
+                    var action = $(this).val();
+                    loadPartial(getUrlFor(action));
+                });
+
+                // delegate submit from partials (AJAX post)
+                $('#partialContainer').on('submit', 'form', function (e) {
+                    e.preventDefault();
+                    var $form = $(this);
+                    $.post($form.attr('action'), $form.serialize())
+                        .done(function (response) {
+                            if (response && response.redirectToUrl) {
+                                window.location.href = response.redirectToUrl;
+                            } else {
+                                $('#partialContainer').html(response);
+                                // بعد از جایگزینی HTML مجدد نمونه را مقداردهی کن
+                                initNeumoInstance();
+                            }
+                        })
+                        .fail(function () {
+                            alert('خطا در ارسال اطلاعات. دوباره تلاش کنید.');
+                        });
+                });
+
+                // Optional fallback: اگر partial به صورت داینامیک از سمت سرور اسکریپت‌ها را ننشاند،
+                // از MutationObserver برای شناسایی اضافه شدن فرم استفاده کن
+                var observer = new MutationObserver(function (mutations) {
+                    mutations.forEach(function (m) {
+                        if (m.addedNodes && m.addedNodes.length) {
+                            m.addedNodes.forEach(function (node) {
+                                if (node.nodeType === 1) {
+                                    if (node.querySelector && node.querySelector('.login-form')) {
+                                        initNeumoInstance();
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+
+                observer.observe(document.getElementById('partialContainer'), { childList: true, subtree: true });
+            });
+        })();
+    </script>
+}
+

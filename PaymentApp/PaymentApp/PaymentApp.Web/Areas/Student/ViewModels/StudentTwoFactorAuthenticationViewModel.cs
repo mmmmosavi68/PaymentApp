@@ -1,0 +1,18 @@
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
+
+namespace PaymentApp.Web.Areas.Student.ViewModels
+{
+    public class StudentTwoFactorAuthenticationViewModel
+    {
+        [Required(ErrorMessage = "کد دو مرحله‌ای الزامی است")]
+        [RegularExpression(@"^\d{6}$", ErrorMessage = "کد باید ۶ رقم باشد")]
+        [Display(Name = "کد دو مرحله‌ای")]
+        public string TwoFactorCode { get; set; }
+
+        [Required(ErrorMessage = "کد امنیتی الزامی است")]
+        [RegularExpression(@"^\d{6}$", ErrorMessage = "کد امنیتی باید ۶ رقم باشد")]
+        [Display(Name = "کد امنیتی")]
+        public string CaptchaCode { get; set; }
+    }
+}

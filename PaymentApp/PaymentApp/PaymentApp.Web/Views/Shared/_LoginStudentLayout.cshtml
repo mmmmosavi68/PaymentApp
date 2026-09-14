@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/Student/LoginStudent/style.css" />
+    @await RenderSectionAsync("style", required: false)
+
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+			@RenderBody()
+        </div>
+    </div>
+	<!--===============================================================================================-->
+    <script src="~/Identity/js/jquery-3.6.1.min.js"></script>
+    <script src="~/Student/LoginStudent/script.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

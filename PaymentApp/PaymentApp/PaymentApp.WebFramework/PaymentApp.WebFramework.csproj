@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="Filters\UserAuthorization\**" />
+		<EmbeddedResource Remove="Filters\UserAuthorization\**" />
+		<None Remove="Filters\UserAuthorization\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="Middlewares\AccessChecker.cs" />
+		<Compile Remove="Middlewares\AccessControlMiddleware.cs" />
+		<Compile Remove="Middlewares\AccessService.cs" />
+		<Compile Remove="Middlewares\RedisCacheService.cs" />
+		<Compile Remove="Middlewares\TokenValidationMiddleware.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="11.0.2" />
+		<PackageReference Include="AutoMapper" Version="16.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.10" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.10" />
+		<PackageReference Include="NLog" Version="6.1.4" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\PaymentApp.Services\PaymentApp.Services.csproj" />
+	</ItemGroup>
+
+</Project>

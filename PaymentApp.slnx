@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="PaymentApp/PaymentApp/PaymentApp.Common/PaymentApp.Common.csproj" />
+  <Project Path="PaymentApp/PaymentApp/PaymentApp.Data/PaymentApp.Data.csproj" />
+  <Project Path="PaymentApp/PaymentApp/PaymentApp.Entities/PaymentApp.Entities.csproj" />
+  <Project Path="PaymentApp/PaymentApp/PaymentApp.Services/PaymentApp.Services.csproj" />
+  <Project Path="PaymentApp/PaymentApp/PaymentApp.Web/PaymentApp.Web.csproj" />
+  <Project Path="PaymentApp/PaymentApp/PaymentApp.WebFramework/PaymentApp.WebFramework.csproj" />
+</Solution>

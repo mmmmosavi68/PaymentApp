@@ -1,0 +1,462 @@
+﻿<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="~/Identity//css//bootstrap//bootstrap.min.css">
+    <link rel="stylesheet" href="~/Identity//css//bootstrap//bootstrap-rtl.min.css">
+
+    <link rel="stylesheet" href="~/Admin/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="~/Admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <link rel="stylesheet" href="~/Admin/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <link rel="stylesheet" href="~/Admin/css/rtl.css">
+    <link rel="stylesheet" href="~/Admin/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <link rel="stylesheet" href="~/css/spinner.css" />
+    <link rel="stylesheet" href="~/Admin/plugins/iziToast/iziToast.min.css" />
+
+    <style>
+
+        .close {
+            float: right;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: #000;
+            text-shadow: 0 1px 0 #fff;
+            opacity: .5;
+        }
+
+        .close, .mailbox-attachment-close {
+            float: right;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: #000;
+            text-shadow: 0 1px 0 #fff;
+            opacity: .5;
+        }
+
+            .close:hover, .mailbox-attachment-close:hover {
+                color: #000;
+                text-decoration: none;
+            }
+
+            .close:not(:disabled):not(.disabled):hover, .mailbox-attachment-close:not(:disabled):not(.disabled):hover, .close:not(:disabled):not(.disabled):focus, .mailbox-attachment-close:not(:disabled):not(.disabled):focus {
+                opacity: .75;
+            }
+
+        button.close, button.mailbox-attachment-close {
+            padding: 0;
+            background-color: transparent;
+            border: 0;
+        }
+
+        a.close.disabled, a.disabled.mailbox-attachment-close {
+            pointer-events: none;
+        }
+
+        .wrapper, body, html {
+            font-size: 15px
+        }
+
+        .header-bar {
+            min-height: 150px;
+        }
+
+
+            .header-bar::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: url("/img/12.jpg") center/cover no-repeat;
+                z-index: -2;
+            }
+
+            .header-bar::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(45deg, #002cf0, #ffffff, #647dec, #ffffff, #002cf0);
+                background: radial-gradient(circle, #345187, #7a9f91);
+                animation: gradientFlow 15s ease infinite;
+                opacity: 0.9; /* شفافیت رنگ */
+                z-index: -1;
+            }
+
+        .content-wrapper {
+            background-image: url(/img/5.jpg);
+        }
+
+        .content-wrapper {
+            background-image: url(/img/5.jpg);
+        }
+
+        .modal-header {
+            cursor: move;
+        }
+
+        .back_img {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-image: url(../../../../Admin/img/bg1.jpg);
+        }
+
+            .back_img::after {
+                max-height: calc(100% -35px);
+                height: calc(100% - 35px);
+                overflow-y: scroll;
+                position: relative;
+            }
+
+        .swal2-popup {
+            direction: rtl !important;
+        }
+
+            .swal2-popup.swal2-success {
+                background-color: #28a745 !important;
+            }
+
+            .swal2-popup.swal2-info {
+                background-color: #17a2b8 !important;
+            }
+
+            .swal2-popup.swal2-error {
+                background-color: #dc3545 !important;
+            }
+
+            .swal2-popup.swal2-warning {
+                background-color: #ffc107 !important;
+            }
+
+            .swal2-popup.swal2-question {
+                background-color: #6c757d !important;
+            }
+
+        .iziToast {
+            background: #fff !important;
+            box-shadow: 0 0 1px rgba(0, 0, 0, .075), 0 1px 2px rgba(0, 0, 0, .075), 1px 2px 4px rgba(0, 0, 0, .075), 1px 3px 8px rgba(0, 0, 0, .075), 2px 4px 16px rgba(0, 0, 0, .075) !important;
+        }
+
+        .iziToast-success .iziToast-message,
+        .iziToast-success .iziToast-title {
+            color: #28a745 !important; /* سبز */
+        }
+
+        .iziToast-error.iziToast-message,
+        .iziToast-error.iziToast-title {
+            color: #dc3545 !important;
+        }
+
+        .rtl-modal .modal-header, .rtl-modal .modal-body, .rtl-modal .modal-footer {
+            direction: rtl;
+            text-align: right;
+        }
+
+        table thead {
+            background: radial-gradient(circle, #348780, #485073);
+            color: #fff;
+        }
+
+        table tbody tr {
+            line-height: 1 !important;
+            height: auto !important;
+            padding: 0 !important;
+        }
+
+        table tbody td, table tbody th {
+            padding: 4px !important; /* کاهش فضای داخلی سلول‌ها */
+            vertical-align: middle !important; /* تنظیم متن به وسط از نظر ارتفاع */
+            text-align: center; /* تنظیم متن به وسط از نظر افقی */
+        }
+
+        .dataTables_filter label, .dataTables_length label {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        /* اضافه کردن استایل راست به چپ */
+        .fc {
+            direction: rtl;
+        }
+
+        .modal-fullscreen {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            top: 0;
+            left: 0;
+            position: fixed;
+            max-width: none;
+            max-height: none;
+        }
+
+        .btn-full-screen {
+            background-color: transparent;
+            border: 0;
+            cursor: pointer;
+            padding: 1rem;
+            margin: -1rem -1rem -1rem auto;
+            margin: -1rem auto -1rem -1rem;
+        }
+
+    </style>
+
+    @await RenderSectionAsync("style", required: false)
+</head>
+<body>
+    <!-- هدر صفحه -->
+    <div class="header-bar d-flex align-items-center position-relative px-4">
+        <div class="pm-3 container pt-3">
+            <div class="row w-100">
+
+
+                <!-- تصویر کاربر -->
+                <div class="col-10 d-flex align-items-start justify-content-end text-light text-end" dir="rtl">
+                    <div class="row w-100 ">
+                        <div class="col-3 d-flex justify-content-end">
+                            @{
+                                var nationalCode = User.FindFirst("NationalCode")?.Value;
+                                var userPhotoPath = Url.Content($"~/uploads/{nationalCode}/{nationalCode}.jpg");
+                                var defaultPhoto = Url.Content("~/img/user.jpg");
+                            }
+                            <img src="@userPhotoPath"
+                                 onerror="this.onerror=null;this.src='@defaultPhoto';" alt="User"
+                                 class="rounded-circle img-fluid"
+                                 style="max-width: 100px;
+                        height: 100px;
+                        object-fit: cover;
+                        border: 4px solid #fff;
+                        box-shadow: 0 8px 20px rgba(0,0,0,0.4);" />
+                        </div>
+                        <div class="col-9 d-flex flex-column justify-content-start text-light text-end">
+                            <div class="info mb-2">
+                                <span>نام و نام خانوادگی: </span>
+                                <span>@User.Identity.Name</span>
+                            </div>
+                            <div class="info mb-2">
+                                <span>کد ملی: </span>
+                                <span>@User.FindFirst("NationalCode")?.Value</span>
+                            </div>
+                            <div class="info">
+                                <span>رشته: </span>
+                                <span>@User.FindFirst("Fields")?.Value</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- عنوان صفحه -->
+                @*     <div class="col-12 col-md-4 d-flex flex-column align-items-center justify-content-center mb-md-0 mb-3">
+                <h2 class="font-weight-bold mb-2 text-light">@ViewData["Title"]</h2>
+                </div>
+                *@
+
+                <!-- مشخصات کاربر -->
+                <div class="col-2 d-flex flex-column align-items-center justify-content-center text-light">
+                    <div class="row text-center">
+
+                        <form method="post" asp-controller="StudentLogin" asp-action="Logout" asp-area="Student">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger btn-block">
+                                <i class="fas fa-sign-out-alt"></i> خروج
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- بدنه -->
+    <div class="container my-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+    <div id="overlay" onclick="off()">
+        <div class="w-100 d-flex justify-content-center align-items-center">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <div id="modalContainer"></div>
+    <!-- اسکریپت‌ها -->
+    <script src="/Admin/plugins/jquery/jquery.min.js"></script>    <!-- jQuery v3.6.0 -->
+    <script src="/Admin/plugins/jquery-ui/jquery-ui.min.js"></script>    <!-- jQuery UI 1.11.4 -->
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+        $.widget.bridge('uibutton', $.ui.button)
+    </script>
+    <script src="~/admin/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Admin/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>    <!-- Bootstrap 4 -->
+    <script src="~/Admin/plugins/moment/moment.min.js"></script>
+    <!-- fullCalendar 2.2.5 -->
+    <script src="~/Admin/plugins/fullcalendar/main.js"></script>
+    <script src="~/Admin/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>     <!-- overlayScrollbars -->
+    <script src="~/Admin/js/adminlte.js"></script>    <!-- AdminLTE App -->
+
+    <script src="~/admin/plugins/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="~/admin/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/Admin/plugins/iziToast/iziToast.min.js"></script>
+    @* jalalidatepicker *@
+    <script src="~/admin/plugins/jalalidatepicker-main/jalalidatepicker.min.js"></script>
+
+    <script>
+        $(function () {
+            $('a').tooltip();
+            $('i').tooltip()
+        })
+        var Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 6000,
+            timerProgressBar: true,
+            showCloseButton: true,
+            grow: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        })
+        iziToast.settings({
+            position: 'topRight',
+            timeout: 5000,
+            rtl: true,
+            animateInside: true,
+            progressBar: true,
+            success: {
+                titleColor: '#28a745',
+                messageColor: '#28a745'
+            },
+            error: {
+                titleColor: '#dc3545',
+                messageColor: '#dc3545'
+            }
+
+        });
+        function on() {
+            document.getElementById("overlay").style.display = "flex";
+        }
+        function off() {
+            document.getElementById("overlay").style.display = "none";
+        }
+        let modalCount = 0;
+        function openModal(title, url, isLarge = false) {
+            modalCount++;
+            const modalId = `dynamicModal${modalCount}`;
+            const modalDialogClass = isLarge ? 'modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg' : 'modal-dialog modal-dialog-centered modal-dialog-scrollable';
+            const modalTemplate = `
+                                                                <div class="modal fade rtl-modal" id="${modalId}" tabindex="-1" role="dialog" aria-labelledby="${modalId}" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+                                                                    <div class="${modalDialogClass}">
+                                                                        <div class="modal-content">
+                                                                            <div class="modal-header">
+                                                                                <div class="align-content-end">
+                                                                                    <h5 class="modal-title" id="lbl_${modalId}">${title}</h5>
+                                                                                </div>
+                                                                                    <div class="align-content-start">
+                                                                                        <button type="button" class="close float-left" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                                                                                        <button type="button" class="btn-full-screen float-right" id="btn_expand_${modalId}"><i class="fas fa-expand-arrows-alt" data-original-title="" title=""></i></button>
+                                                                                    </div>
+                                                                            </div>
+                                                                            <div class="modal-body" id="body_${modalId}">
+                                                                                <div class="row align-items-center">
+                                                                                    <div class="col-md-12 mb-4 text-center">
+                                                                                        <span class="h3">در حال بارگزاری</span>
+                                                                                    </div>
+                                                                                    <div class="col-md-12 text-center">
+                                                                                         <div class="spinner-container">
+                                                                        <div class="spinner-border" role="status">
+                                                                            <span class="sr-only">Loading...</span>
+                                                                        </div>
+                                                                    </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>`;
+            document.getElementById('modalContainer').insertAdjacentHTML('beforeend', modalTemplate);
+            $(`#${modalId}`).modal('show');
+
+            // Clean the previous content
+            $(`#${modalId}`).on('hidden.bs.modal', function () {
+                $(this).remove();
+            });
+
+            // Make the modal draggable
+            $(`#${modalId} .modal-dialog`).draggable({
+                handle: ".modal-header"
+            });
+
+            $(`#btn_expand_${modalId}`).on('click', function () {
+                const modalDialog = $(`#${modalId} .modal-dialog`);
+
+                // تغییر کلاس‌های مودال برای تمام صفحه شدن
+                modalDialog.toggleClass('modal-dialog-centered');
+                modalDialog.toggleClass('modal-fullscreen');
+
+                // جستجوی آیکن و تغییر کلاس‌ها
+                const icon = $(this).find('i.fa-expand-arrows-alt');
+                if (icon.length > 0) {
+                    icon.removeClass('fa-expand-arrows-alt').addClass('fa-compress-arrows-alt');
+                } else {
+                    const reverseIcon = $(this).find('i.fa-compress-arrows-alt');
+                    reverseIcon.removeClass('fa-compress-arrows-alt').addClass('fa-expand-arrows-alt');
+                }
+            });
+            // Load the content dynamically
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function (data) {
+                    $(`#body_${modalId}`).html(data);
+                },
+                error: function (xhr) {
+                    if (xhr.status === 403) {
+                        $(`#body_${modalId}`).html('<div class="alert alert-danger">شما مجوز دسترسی به این بخش را ندارید.</div>');
+                    } else {
+                        $(`#body_${modalId}`).html('<div class="alert alert-danger">خطایی رخ داده است. لطفاً دوباره تلاش کنید.</div>');
+                    }
+                }
+            });
+        }
+
+        jalaliDatepicker.startWatch({
+            minDate: "attr",
+            maxDate: "attr",
+            minTime: "attr",
+            maxTime: "attr",
+            zIndex: 9999,
+            time: true,
+            date: true,
+            hasSecond: true,
+            hideAfterChange: false,
+            autoHide: true,
+            showTodayBtn: true,
+            showEmptyBtn: true,
+            topSpace: 10,
+            bottomSpace: 30,
+            overflowSpace: -10,
+            dayRendering(opt, input) {
+                return {
+                    isHollyDay: opt.day == 1,
+                };
+            },
+        });
+
+
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

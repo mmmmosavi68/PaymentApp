@@ -1,0 +1,203 @@
+﻿@{
+    ViewData["Title"] = "فرم ثبت اطلاعات";
+}
+
+<div class="mb-4">
+<h2 >@Model.FormTitle</h2>
+<span class="text-danger mb-4">@Model.FormDescription</span>
+</div>
+<form id="formSubmission" method="post" asp-action="SubmitForm" asp-controller="StudentHome" asp-area="Student" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" name="FormId" value="@Model.FormId" />
+
+    @foreach (var field in Model.Fields)
+    {
+        var inputName = $"field_{field.Id}";
+        <div class="form-group mb-4">
+            <label class="fw-bold h5">@field.Label</label>
+            <span class="text-secondary">(@field.Description)</span>
+
+            @{
+                var requiredAttr = field.IsRequired ? "required" : "";
+                var validationAttr = !string.IsNullOrEmpty(field.ValidationPattern)
+                ? $"data-validation='{field.ValidationPattern}' data-errormessage='{field.ErrorMessage}'"
+                : "";
+            }
+           
+            <span class="text-danger text-small validation-error" style="display:none"></span>
+        </div>
+    }
+
+    @* Coefficient Fields *@
+    @if (Model.CoefficientFields != null)
+    {
+        foreach (var coef in Model.CoefficientFields)
+        {
+            var inputName = $"coef_{coef.Id}";
+            <div class="form-group mb-4">
+                <label class="fw-bold h5">@coef.Label</label>
+                <span class="text-secondary">
+                    (@coef.Description)</span>
+
+                @{
+                    var requiredAttr = coef.IsRequired ? "required" : "";
+                    var validationAttr = !string.IsNullOrEmpty(coef.ValidationPattern)
+                    ? $"data-validation='{coef.ValidationPattern}' data-errormessage='{coef.ErrorMessage}'"
+                    : "";
+                }
+               
+                <span class="text-danger validation-error" style="display:none"></span>
+
+            </div>
+        }
+    }
+
+    <button type="button" id="btnSave" class="btn btn-success mt-4">ذخیره اطلاعات</button>
+    <button type="button" id="btnBack" class="btn btn-dark mt-4">برگشت</button>
+</form>
+
+<div id="formMessage" style="margin-top:10px;"></div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            // ---------------------
+            // 🔹 تابع‌های کمکی
+            // ---------------------
+            function showError(input, msg) {
+                input.closest(".form-group").find(".validation-error")
+                    .text(msg)
+                    .show();
+            }
+
+            function validateForm() {
+                let isValid = true;
+                $("#formSubmission .validation-error").hide();
+
+                $("#formSubmission [name]").each(function () {
+                    let input = $(this);
+                    let val = input.val()?.trim();
+                    let isRequired = input.prop("required");
+                    let pattern = input.data("validation");
+                    let errorMsg = input.data("errormessage") || "مقدار وارد شده نامعتبر است.";
+
+                    // بررسی اجباری بودن
+                    if (isRequired) {
+                        if (input.attr("type") === "checkbox") {
+                            if (!input.is(":checked")) {
+                                showError(input, "این فیلد الزامی است.");
+                                isValid = false;
+                                return;
+                            }
+                        } else if (input.attr("type") === "file") {
+                            if (input[0].files.length === 0) {
+                                showError(input, "لطفاً فایل موردنظر را انتخاب کنید.");
+                                isValid = false;
+                                return;
+                            }
+                        } else if (!val) {
+                            showError(input, "پر کردن این فیلد الزامی است.");
+                            isValid = false;
+                            return;
+                        }
+                    }
+
+                    // بررسی regex
+                    if (pattern && val) {
+                        let regex = new RegExp(pattern);
+                        if (!regex.test(val)) {
+                            showError(input, errorMsg);
+                            isValid = false;
+                        }
+                    }
+                });
+
+                return isValid;
+            }
+
+            // ---------------------
+            // 🔹 ذخیره فرم
+            // ---------------------
+            $("#btnSave").click(function () {
+                var $btn = $(this);
+
+                function getAntiForgeryToken() {
+                    var input = document.querySelector('input[name="__RequestVerificationToken"]');
+                    return input ? input.value : null;
+                }
+                var token = getAntiForgeryToken();
+
+                if (!validateForm()) {
+                    $("#formMessage").html('<div class="alert alert-danger">لطفاً خطاهای فرم را برطرف کنید.</div>');
+                    return;
+                }
+
+                $btn.prop("disabled", true).text("در حال ذخیره...");
+                var form = $("#formSubmission")[0];
+                var formData = new FormData(form);
+
+                $.ajax({
+                    url: '@Url.Action("SubmitForm", "StudentHome", new { area = "Student" })',
+                    type: 'POST',
+                    data: formData,
+                    headers: token ? { 'RequestVerificationToken': token } : {},
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            $('#formMessage').html('<div class="alert alert-success">' + response.message + '</div>');
+                            if (response.redirectUrl) {
+                                setTimeout(function () {
+                                    window.location.href = "index";
+                                }, 1200);
+                            }
+                        } else {
+                            $('#formMessage').html('<div class="alert alert-danger">' + response.message + '</div>');
+                        }
+                    },
+                    error: function (xhr) {
+                        // سعی کنیم JSON را پارس کنیم و اگر آرایه errors یا message وجود داشت نمایش دهیم
+                        var html = '<div class="alert alert-danger">خطایی رخ داد</div>';
+                        try {
+                            var data = JSON.parse(xhr.responseText);
+                            if (data) {
+                                if (data.errors && Array.isArray(data.errors) && data.errors.length) {
+                                    html = '<div class="alert alert-danger"><ul class="mb-0">';
+                                    data.errors.forEach(function (e) {
+                                        html += '<li>' + e + '</li>';
+                                    });
+                                    html += '</ul></div>';
+                                } else if (data.message) {
+                                    html = '<div class="alert alert-danger">' + data.message + '</div>';
+                                } else if (typeof data === 'string') {
+                                    html = '<div class="alert alert-danger">' + data + '</div>';
+                                }
+                            }
+                        } catch (e) {
+                            // اگر JSON نبود، متن خام را نمایش بده (با فرمت ایمن)
+                            var text = xhr.responseText || 'خطای ناشناخته';
+                            html = '<div class="alert alert-danger">' + $('<div/>').text(text).html() + '</div>';
+                        }
+
+                        $('#formMessage').html(html);
+                    },
+                    complete: function () {
+                        $btn.prop("disabled", false).text("ذخیره اطلاعات");
+                    }
+                });
+            });
+
+            // ---------------------
+            // 🔹 برگشت بدون ولیدیشن
+            // ---------------------
+            $("#btnBack").click(function () {
+                window.location.href = '@Url.Action("Index", "StudentHome", new { area = "Student" })';
+            });
+
+        });
+    </script>
+}
+
+

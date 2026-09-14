@@ -1,0 +1,125 @@
+﻿@{
+    ViewData["Title"] = "SubmissionDataList";
+}
+
+@using PaymentApp.Convertor
+
+
+@{
+    int i = 1;
+}
+
+<div class="bg-light rounded p-4 table-responsive">
+    <p class="h4 fw-bold text-danger col-12 text-center">شما تا تاریخ <span class="text-primary text-decoration-underline">@DateConvertor.ToShamsiDateTime(@DateTime.Now)</span> تعداد <span class="text-primary text-decoration-underline">@Model.Count()</span> مدرک بارگذاری کرده اید.</p>
+    <table class="table-hover table-striped table text-center" id="tbl_data">
+        <thead>
+            <tr class='trhead'>
+                <th>#</th>
+                <th>نوع مدرک</th>
+                <th>خلاصه اطلاعات</th> <!-- ستون جدید -->
+
+                <th>تاریخ ارسال</th>
+                <th>مشاهده</th>
+                <th>عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr id="tr_@(item.SubmissionId)">
+                    <td>@i</td>
+                    <td>
+                        @{
+                            var text = string.Join(" | ", item.SubmissionValues); // همه مقادیر را در یک خط
+                            var displayText = text.Length > 80 ? text.Substring(0, 80) + "..." : text;
+                        }
+                        <span title="@text">@displayText</span>
+                    </td>
+
+                    <td>
+                        <a class="btn btn-sm btn-outline-info" onclick="SubmissionDataDetail('@item.SubmissionId', '@item.FormTitle')" title="مشاهده"><i class="fa fa-info"></i></a>
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-outline-danger" id="@item.SubmissionId" data-toggle="DeleteSubmissionData" title="حذف فرم"><i class="fa fa-trash"></i></a>
+                    </td>
+                </tr>
+                i++;
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<script src="~/js/bootstrap-confirmation.min.js"></script>
+<script src="~/admin/plugins/datatables/jquery.datatables.min.js"></script>
+<script src="~/admin/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/admin/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+        var table = $('#tbl_data').DataTable({
+            paging: true,
+            searching: true,
+            lengthChange: true,
+            ordering: true,
+            info: true,
+            autoWidth: false,
+            buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"]
+        });
+
+// حذف با SweetAlert2 و دکمه رنگی
+        $(document).on('click', '[data-toggle="DeleteSubmissionData"]', function () {
+            var id = $(this).attr('id');
+            Swal.fire({
+                title: 'آیا از حذف مطمئن هستید؟',
+                showCancelButton: true,
+                confirmButtonText: 'حذف',
+                cancelButtonText: 'انصراف',
+                icon: 'warning'
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    DeleteSubmissionData(id);
+                }
+            });
+        });
+
+
+
+        $('.selectAll').click(function () {
+            var table = $(this).closest('table');
+            $('input:checkbox', table).prop('checked', this.checked);
+        });
+
+
+    });
+    function SubmissionDataDetail(id, title) {
+          console.log(id)
+        openModal(title, '/Student/StudentHome/SubmissionDataDetail?id=' + id, false);
+    }
+    function DeleteSubmissionData(id) {
+      
+        $.ajax({
+            method: "POST",
+            url: "/Student/StudentHome/DeleteSubmissionData?submissionId=" + id,
+            success: function (response) {
+                console.log(response)
+                if (response.isSuccess) {
+                    $("#tr_" + id).addClass("bg-danger").hide('slow', function () {
+                        Toast.fire({ icon: 'success', title: response.message });
+                    });
+                    $("#SubmissionDataContainer").load("/Student/StudentHome/SubmissionDataList");
+                } else {
+                    Toast.fire({ icon: 'warning', title: response.message });
+                }
+            },
+            error: function () {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'فرمی جهت حذف ارسال نشده است یا خطایی رخ داده.'
+                });
+            }
+        });
+    }
+</script>
+
