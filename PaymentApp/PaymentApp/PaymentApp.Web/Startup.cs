@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentApp.Common;
 using PaymentApp.Data;
+using PaymentApp.Services.Ipg;
 using PaymentApp.WebFramework.Configuration;
 using PaymentApp.WebFramework.Middlewares;
 using System;
@@ -33,6 +34,7 @@ namespace PaymentApp.Web
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.Configure<SiteSettings>(Configuration.GetSection(nameof(SiteSettings)));
             services.Configure<ClientConfig>(Configuration.GetSection(nameof(ClientConfig)));
+            services.AddHttpClient<IIpgService, IpgService>();
             services.AddSingleton<EnvJsGenerator>();
             services.InitializeAutoMapper();
             services.AddDbContext(Configuration);
@@ -151,6 +153,11 @@ namespace PaymentApp.Web
                     name: "menu",
                     areaName: "Menu",
                     pattern: "Menu/{controller=Home}/{action=Index}/{id?}");
+                // Payment area
+                endpoints.MapAreaControllerRoute(
+                    name: "payment",
+                    areaName: "Payment",
+                    pattern: "Payment/{controller=Home}/{action=Index}/{id?}");
                 // Report area
                 endpoints.MapAreaControllerRoute(
                     name: "report",

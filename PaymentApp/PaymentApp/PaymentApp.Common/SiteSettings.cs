@@ -14,8 +14,10 @@ namespace PaymentApp.Common
         public FileSettings FileSettings { get; set; }
         public bool IpFiltering { get; set; }
         public string[] AllowedIpRanges { get; set; }
-
         public string RedirectURL { get; set; }
+
+        public IpgSettings IpgSettings { get; set; }   // <-- این خط اضافه شد
+
     }
 
     public class IdentitySettings
@@ -69,5 +71,16 @@ namespace PaymentApp.Common
     {
         public List<string> AllowedUploadExtensions { get; set; } = new();
         public int MaxUploadFileSizeInMB { get; set; } = 10; // مقدار پیش‌فرض
+    }
+
+
+    public class IpgSettings
+    {
+        public string BaseUrl { get; set; } = null!;
+        public string Username { get; set; } = null!;
+        public string Password { get; set; } = null!;
+        public string RedirectUrl { get; set; } = null!;
+        public string UnitCode { get; set; } = null!;      // <-- جایگزین Iban
+        public string SourceCode { get; set; } = null!;    // <-- جایگزین PurchaseId
     }
 }
