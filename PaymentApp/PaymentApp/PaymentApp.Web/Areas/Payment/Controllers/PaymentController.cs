@@ -63,7 +63,7 @@ namespace PaymentApp.Web.Areas.Payment.Controllers
             if (exam is null) return NotFound();
             if (!ModelState.IsValid) return View(form);
 
-            var billNumber = Guid.NewGuid().ToString("N")[..25];
+            var billNumber = DateTime.UtcNow.ToString("yyyyMMddHHmmss") + Random.Shared.Next(100000, 999999); 
 
 
             var payment = new ExamPaymentRequest
@@ -105,9 +105,9 @@ namespace PaymentApp.Web.Areas.Payment.Controllers
                                     {
                                         new()
                                         {
-                                            Iban = cbiResult.Sheba!,        // <-- دیگه از cbiResult میاد
+                                            Iban = cbiResult.Sheba!,        
                                             Amount = exam.Amount,
-                                            PurchaseID = cbiResult.Cbi!      // <-- دیگه از cbiResult میاد
+                                            PurchaseID = cbiResult.Cbi!    
                                         }
                                     }
                     }

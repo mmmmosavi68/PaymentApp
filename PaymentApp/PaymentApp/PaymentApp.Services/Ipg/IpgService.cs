@@ -42,37 +42,51 @@ namespace PaymentApp.Services.Ipg
             return result.Token;
         }
 
-        public async Task<IpgPreparePaymentResponse> PreparePaymentAsync(IpgPreparePaymentRequest request, string apiToken)
-        {
-            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/api/cashsystem/payment/ipg/preapare/");
-            httpRequest.Headers.Add("Authorization", $"Token {apiToken}");
-            httpRequest.Content = JsonContent.Create(request);
-
-            var response = await _httpClient.SendAsync(httpRequest);
-            var result = await response.Content.ReadFromJsonAsync<IpgPreparePaymentResponse>();
-
-            if (result is null || !result.IsTokenCreated)
-                throw new InvalidOperationException($"تولید لینک پرداخت ناموفق. msg={result?.Msg}");
-
-            return result;
-        }
-
-
         public async Task<CbiResponse> GetCbiAsync(CbiRequest request, string apiToken)
         {
             using var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/cbi/api/request/");
-            httpRequest.Headers.Add("X_Authorization", $"Token {apiToken}");  // نه Authorization معمولی!
+            httpRequest.Headers.TryAddWithoutValidation("X_Authorization", $"Token {apiToken}");
             httpRequest.Content = JsonContent.Create(request);
 
             var response = await _httpClient.SendAsync(httpRequest);
             var rawBody = await response.Content.ReadAsStringAsync();
 
-            var result = System.Text.Json.JsonSerializer.Deserialize<CbiResponse>(
+            var result = JsonSerializer.Deserialize<CbiResponse>(
                 rawBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             if (result is null || result.Rescode != 100 || string.IsNullOrEmpty(result.Cbi))
                 throw new InvalidOperationException(
                     $"دریافت شناسه واریز ناموفق. rescode={result?.Rescode}, msg={result?.Msg}, raw={rawBody}");
+
+            return result;
+        }
+
+        public async Task<IpgPreparePaymentResponse> PreparePaymentAsync(IpgPreparePaymentRequest request, string apiToken)
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/api/cashsystem/payment/ipg/preapare/");
+
+            // نکته: برخلاف مستند (که Authorization معمولی نوشته)، سرور واقعی X_Authorization می‌خواد
+            httpRequest.Headers.TryAddWithoutValidation("X_Authorization", $"Token {apiToken}");
+
+            var wrapped = new { data = request };
+            var json = JsonSerializer.Serialize(wrapped);
+            httpRequest.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.SendAsync(httpRequest);
+            var rawBody = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+                throw new InvalidOperationException(
+                    $"خطا در سرویس پرداخت. Status={(int)response.StatusCode} {response.StatusCode}, Response={rawBody}");
+
+            var result = JsonSerializer.Deserialize<IpgPreparePaymentResponse>(
+                rawBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            if (result is null)
+                throw new InvalidOperationException($"پاسخ سرویس پرداخت قابل پردازش نیست. raw={rawBody}");
+
+            if (!result.IsTokenCreated)
+                throw new InvalidOperationException($"تولید لینک پرداخت ناموفق. msg={result.Msg}, raw={rawBody}");
 
             return result;
         }
