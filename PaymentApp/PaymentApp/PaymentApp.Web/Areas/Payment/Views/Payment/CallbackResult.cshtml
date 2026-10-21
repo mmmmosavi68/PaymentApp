@@ -1,0 +1,91 @@
+﻿@model PaymentApp.Web.Areas.Payment.ViewModels.PaymentResultViewModel
+@using PaymentApp.Entities.Payment
+@{
+    ViewData["Title"] = "نتیجه پرداخت";
+}
+<div class="container my-5" dir="rtl">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-body text-center p-4">
+
+                    @switch (Model.Status)
+                    {
+                        case PaymentRequestStatus.Success:
+                            <div class="mb-3">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 text-success"
+                                      style="width:72px;height:72px;font-size:2.2rem;">
+                                    &#10003;
+                                </span>
+                            </div>
+                            <h4 class="text-success mb-2">پرداخت با موفقیت انجام شد</h4>
+                            break;
+
+                        case PaymentRequestStatus.Failed:
+                            <div class="mb-3">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-10 text-danger"
+                                      style="width:72px;height:72px;font-size:2.2rem;">
+                                    &#10007;
+                                </span>
+                            </div>
+                            <h4 class="text-danger mb-2">پرداخت ناموفق بود</h4>
+                            break;
+
+                        default:
+                            <div class="mb-3">
+                                <span class="spinner-border text-warning" style="width:3rem;height:3rem;" role="status"></span>
+                            </div>
+                            <h4 class="text-warning mb-2">در حال بررسی نتیجه پرداخت...</h4>
+                            <p class="text-muted small mb-0">
+                                نتیجه هنوز از درگاه دریافت نشده است. لطفاً چند لحظه دیگر این صفحه را دوباره بارگذاری کنید.
+                            </p>
+                            break;
+                    }
+
+                    <hr class="my-4" />
+
+                    <dl class="row text-end mb-0">
+                        <dt class="col-5 text-muted fw-normal">آزمون</dt>
+                        <dd class="col-7">@Model.ExamTitle</dd>
+
+                        <dt class="col-5 text-muted fw-normal">مبلغ</dt>
+                        <dd class="col-7">@Model.Amount.ToString("N0") ریال</dd>
+
+                        @if (!string.IsNullOrEmpty(Model.ResNum))
+                        {
+                            <dt class="col-5 text-muted fw-normal">شماره پیگیری</dt>
+                            <dd class="col-7">@Model.ResNum</dd>
+                        }
+
+                        @if (!string.IsNullOrEmpty(Model.ReferenceCode))
+                        {
+                            <dt class="col-5 text-muted fw-normal">شماره مرجع</dt>
+                            <dd class="col-7">@Model.ReferenceCode</dd>
+                        }
+                    </dl>
+
+                    <div class="d-grid gap-2 mt-4">
+                        @if (Model.Status == PaymentRequestStatus.Success && !string.IsNullOrEmpty(Model.PdfUrl))
+                        {
+                            <a href="@Model.PdfUrl" target="_blank" rel="noopener" class="btn btn-outline-success">
+                                دریافت رسید PDF
+                            </a>
+                        }
+                        <a href="@Url.Action("Index", "Payment", new { area = "Payment" })" class="btn btn-secondary">
+                            بازگشت به لیست آزمون‌ها
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.Status == PaymentRequestStatus.Pending)
+{
+    <script>
+        // چون Webhook ممکنه با چند ثانیه تاخیر نسبت به برگشت کاربر برسه، صفحه رو خودکار رفرش می‌کنیم
+        setTimeout(function () { window.location.reload(); }, 4000);
+    </script>
+}
